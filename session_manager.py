@@ -1,6 +1,10 @@
 from datetime import datetime
-from database import conectar, registrar_evento
-
+from database import (
+    conectar,
+    registrar_evento,
+    registrar_evidencia_ocr,
+    registrar_navegacao
+)
 
 class SessionManager:
 
@@ -62,7 +66,11 @@ class SessionManager:
         print("================================")
         print()
 
-    def registrar_janela(self, janela, aplicativo):
+    def registrar_janela(
+            self,
+            janela,
+            aplicativo,
+            titulo_janela=None):
 
         if not self.sessao_ativa:
             return None
@@ -71,6 +79,7 @@ class SessionManager:
             sessao_id=self.sessao_ativa,
             janela=janela,
             aplicativo=aplicativo,
+            titulo_janela=titulo_janela,
             observacao=None
         )
 
@@ -110,3 +119,35 @@ class SessionManager:
         self.protocolo_ativo = None
         self.descricao_ativa = None
         self.cliente_ativo = None
+
+    def registrar_ocr(
+            self,
+            origem,
+            texto):
+
+        if not self.sessao_ativa:
+            return
+
+        registrar_evidencia_ocr(
+            self.sessao_ativa,
+            origem,
+            texto
+        )
+
+    def registrar_navegacao(
+            self,
+            navegador,
+            titulo,
+            categoria,
+            url=None):
+
+        if not self.sessao_ativa:
+            return
+
+        registrar_navegacao(
+            self.sessao_ativa,
+            navegador,
+            titulo,
+            categoria,
+            url
+        )

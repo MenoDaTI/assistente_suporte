@@ -92,7 +92,7 @@ class AssistenteGUI:
         self.lbl_sessoes.pack(pady=5)
 
         # =========================
-        # EVENTOS CAPTURADOS
+        # Eventos Capturados
         # =========================
 
         self.lbl_eventos = tk.Label(
@@ -243,10 +243,10 @@ class AssistenteGUI:
                 text=f"Tempo: {horas:02}:{minutos:02}:{segundos:02}"
             )
 
-        self.root.after(
-            1000,
-            self.atualizar_tempo
-        )
+            self.root.after(
+                1000,
+                self.atualizar_tempo
+            )
         if self.manager.sessao_ativa:
 
             total_eventos = contar_eventos_sessao(

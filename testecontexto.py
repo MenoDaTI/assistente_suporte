@@ -1,5 +1,9 @@
-from context_monitor import ContextMonitor
+from report_generator import ReportGenerator
 
-contexto = ContextMonitor.obter_contexto_ativo()
+gerador = ReportGenerator(
+    sessao_id=13
+)
 
-print(contexto)
+print(
+    gerador.gerar_relatorio()
+)

@@ -1,30 +1,28 @@
-import win32gui
-import win32process
-import psutil
+from context_monitor import ContextMonitor
 
 
 def obter_janela_ativa():
 
     try:
 
-        hwnd = win32gui.GetForegroundWindow()
-
-        titulo = win32gui.GetWindowText(hwnd)
-
-        _, pid = win32process.GetWindowThreadProcessId(hwnd)
-
-        processo = psutil.Process(pid)
-
-        aplicativo = processo.name()
+        contexto = ContextMonitor.obter_contexto_ativo()
 
         return {
-            "janela": titulo,
-            "aplicativo": aplicativo
+            "janela": contexto["titulo"],
+            "titulo_janela": contexto["titulo"],
+            "aplicativo": contexto["aplicativo"],
+            "pid": contexto["pid"]
         }
 
-    except Exception as e:
+    except Exception as erro:
+
+        print(
+            f"Erro no WindowMonitor: {erro}"
+        )
 
         return {
             "janela": "DESCONHECIDO",
-            "aplicativo": "DESCONHECIDO"
+            "titulo_janela": "DESCONHECIDO",
+            "aplicativo": "DESCONHECIDO",
+            "pid": None
         }

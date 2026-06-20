@@ -40,7 +40,7 @@ def criar_tabelas():
                    """)
 
     # =========================
-    # TABELA DE EVENTOS
+    # TABELA DE Eventos
     # =========================
 
     cursor.execute("""
@@ -272,3 +272,61 @@ def contar_aplicativos_sessao(sessao_id):
     conn.close()
 
     return total
+def registrar_evidencia_ocr(
+        sessao_id,
+        origem,
+        texto_extraido):
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+                   INSERT INTO evidencias_ocr (
+                       sessao_id,
+                       data_hora,
+                       origem,
+                       texto_extraido
+                   )
+                   VALUES (?, ?, ?, ?)
+                   """, (
+                       sessao_id,
+                       datetime.now(),
+                       origem,
+                       texto_extraido
+                   ))
+
+    conn.commit()
+    conn.close()
+
+
+def registrar_navegacao(
+        sessao_id,
+        navegador,
+        titulo,
+        categoria,
+        url=None):
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO navegacao (
+        sessao_id,
+        data_hora,
+        navegador,
+        titulo,
+        categoria,
+        url
+    )
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        sessao_id,
+        datetime.now(),
+        navegador,
+        titulo,
+        categoria,
+        url
+    ))
+
+    conn.commit()
+    conn.close()
