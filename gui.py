@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog
 from datetime import datetime
-
+from support_brain import SupportBrain
 from database import (
     contar_sessoes_hoje,
     contar_eventos_sessao,
@@ -178,10 +178,10 @@ class AssistenteGUI:
 
     def finalizar_sessao(self):
 
-        self.manager.finalizar_sessao()
+        sessao_id = self.manager.finalizar_sessao()
 
         self.lbl_status.config(
-            text="Status: FINALIZADA"
+            text="Status: Analisando IA..."
         )
 
         self.lbl_tempo.config(
@@ -189,6 +189,33 @@ class AssistenteGUI:
         )
 
         self.inicio_sessao = None
+
+        if sessao_id:
+
+            try:
+
+                brain = SupportBrain(sessao_id)
+
+                resultado = brain.analisar_sessao()
+
+                print()
+                print("================================")
+                print("ANÁLISE IA CONCLUÍDA")
+                print(resultado)
+                print("================================")
+                print()
+
+                self.lbl_status.config(
+                    text="Status: FINALIZADA + IA"
+                )
+
+            except Exception as erro:
+
+                print(f"Erro ao executar SupportBrain: {erro}")
+
+                self.lbl_status.config(
+                    text="Status: FINALIZADA"
+                )
 
     def atualizar_tempo(self):
 

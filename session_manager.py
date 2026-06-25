@@ -115,10 +115,14 @@ class SessionManager:
         print("================================")
         print()
 
+        sessao_finalizada = self.sessao_ativa
+
+
         self.sessao_ativa = None
         self.protocolo_ativo = None
         self.descricao_ativa = None
         self.cliente_ativo = None
+        return sessao_finalizada
 
     def registrar_ocr(
             self,

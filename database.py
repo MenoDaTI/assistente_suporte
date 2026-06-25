@@ -330,3 +330,27 @@ def registrar_navegacao(
 
     conn.commit()
     conn.close()
+def registrar_ai_contexto(
+        sessao_id,
+        contexto_json,
+        confianca):
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO ai_contexto (
+        sessao_id,
+        data_hora,
+        contexto_json,
+        confianca
+    )
+    VALUES (?, datetime('now'), ?, ?)
+    """, (
+        sessao_id,
+        contexto_json,
+        confianca
+    ))
+
+    conn.commit()
+    conn.close()
