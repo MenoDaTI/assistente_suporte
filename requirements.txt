@@ -1,6 +1,6 @@
 keyboard
 psutil
-win32gui
+pywin32
 mss
 easyocr
 numpy
