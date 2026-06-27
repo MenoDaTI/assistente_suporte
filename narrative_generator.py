@@ -1,14 +1,19 @@
+"""Gera uma narrativa textual do atendimento com base no resumo da sessao."""
+
 from session_summary import SessionSummary
 from timeline_generator import TimelineGenerator
 
 
 class NarrativeGenerator:
+    """Converte dados capturados em uma narrativa de atendimento."""
 
     def __init__(self, sessao_id):
+        """Guarda a sessao que sera narrada."""
 
         self.sessao_id = sessao_id
 
     def gerar(self):
+        """Combina resumo, timeline e entidades em texto corrido."""
 
         resumo = SessionSummary(
             self.sessao_id
@@ -115,6 +120,7 @@ class NarrativeGenerator:
         for entidade in resumo[
             "entidades"
         ]:
+            # IPs costumam indicar servidores ou sistemas acessados.
 
             if entidade["tipo"] == "IP":
 
@@ -147,6 +153,7 @@ class NarrativeGenerator:
         for entidade in resumo[
             "entidades"
         ]:
+            # Comandos ajudam a documentar intervencoes tecnicas.
 
             if entidade["tipo"] == "COMANDO":
 
@@ -181,6 +188,7 @@ class NarrativeGenerator:
         for entidade in resumo[
             "entidades"
         ]:
+            # Ramais ajudam a explicar o escopo do atendimento VoIP.
 
             if entidade["tipo"] == "RAMAL":
 

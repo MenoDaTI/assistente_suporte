@@ -1,7 +1,10 @@
+"""Executa um teste manual direto do analisador de contexto por IA."""
+
 from ai_context_analyzer import AIContextAnalyzer
 
 ia = AIContextAnalyzer()
 
+# Exemplo fixo que valida se o modelo local classifica um cenario VOIP.
 resultado = ia.analisar(
     janela="172.16.11.77 - PuTTY",
     aplicativo="putty.exe",

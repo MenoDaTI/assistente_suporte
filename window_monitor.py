@@ -1,7 +1,10 @@
+"""Adaptador simples que transforma ContextMonitor em dados de janela."""
+
 from context_monitor import ContextMonitor
 
 
 def obter_janela_ativa():
+    """Padroniza a leitura do contexto ativo para o ActivityMonitor."""
 
     try:
 

@@ -1,13 +1,18 @@
+"""Gera um relatorio tecnico estruturado a partir dos dados da sessao."""
+
 from session_summary import SessionSummary
 
 
 class ReportGenerator:
+    """Monta uma versao textual estruturada da sessao."""
 
     def __init__(self, sessao_id):
+        """Guarda a sessao que sera transformada em relatorio."""
 
         self.sessao_id = sessao_id
 
     def gerar_relatorio(self):
+        """Organiza cabecalho, apps, entidades e cronologia em texto."""
 
         resumo = SessionSummary(
             self.sessao_id
@@ -82,6 +87,7 @@ class ReportGenerator:
         ramais = []
 
         for entidade in resumo["entidades"]:
+            # Separa entidades por tipo para montar secoes legiveis.
 
             tipo = entidade["tipo"]
             valor = entidade["valor"]

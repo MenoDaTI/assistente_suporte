@@ -1,3 +1,5 @@
+"""Camada de persistencia SQLite usada por monitores, resumo e IA."""
+
 import sqlite3
 from datetime import datetime
 
@@ -5,10 +7,12 @@ DB_NAME = "suporte.db"
 
 
 def conectar():
+    """Abre conexao SQLite no arquivo local do projeto."""
     return sqlite3.connect(DB_NAME)
 
 
 def criar_tabelas():
+    """Cria ou atualiza o schema minimo usado pela aplicacao."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -130,8 +134,70 @@ def criar_tabelas():
                    (
                        id
                    )
-                       )
+                   )
                    """)
+
+    cursor.execute("""
+                   CREATE TABLE IF NOT EXISTS navegacao
+                   (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       sessao_id INTEGER,
+                       data_hora DATETIME,
+                       navegador TEXT,
+                       titulo TEXT,
+                       categoria TEXT,
+                       url TEXT,
+                       FOREIGN KEY (sessao_id) REFERENCES sessoes (id)
+                   )
+                   """)
+
+    cursor.execute("""
+                   CREATE TABLE IF NOT EXISTS evidencias_ocr
+                   (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       sessao_id INTEGER,
+                       data_hora DATETIME,
+                       origem TEXT,
+                       texto_extraido TEXT,
+                       FOREIGN KEY (sessao_id) REFERENCES sessoes (id)
+                   )
+                   """)
+
+    cursor.execute("""
+                   CREATE TABLE IF NOT EXISTS entidades
+                   (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       sessao_id INTEGER,
+                       data_hora DATETIME,
+                       tipo TEXT,
+                       valor TEXT,
+                       FOREIGN KEY (sessao_id) REFERENCES sessoes (id)
+                   )
+                   """)
+
+    cursor.execute("""
+                   CREATE TABLE IF NOT EXISTS ai_contexto
+                   (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       sessao_id INTEGER,
+                       data_hora DATETIME,
+                       contexto_json TEXT,
+                       confianca REAL,
+                       FOREIGN KEY (sessao_id) REFERENCES sessoes (id)
+                   )
+                   """)
+
+    colunas_eventos = [
+        row[1]
+        for row in cursor.execute("PRAGMA table_info(eventos)")
+    ]
+
+    if "titulo_janela" not in colunas_eventos:
+        # Migra bancos antigos sem perder os eventos ja gravados.
+        cursor.execute("""
+                       ALTER TABLE eventos
+                       ADD COLUMN titulo_janela TEXT
+                       """)
 
     conn.commit()
     conn.close()
@@ -143,6 +209,7 @@ def registrar_evento(
         aplicativo,
         titulo_janela=None,
         observacao=None):
+    """Insere evento de janela/aplicativo e devolve seu id."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -174,6 +241,7 @@ def registrar_evento(
 def atualizar_duracao_evento(
         evento_id,
         duracao_segundos):
+    """Atualiza a duracao de um evento quando a janela muda."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -197,6 +265,7 @@ def registrar_contexto(
         chave,
         valor,
         evento_id=None):
+    """Grava informacao estruturada associada a sessao e opcionalmente evento."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -224,6 +293,7 @@ def registrar_contexto(
 
 
 def contar_sessoes_hoje():
+    """Conta sessoes abertas no dia atual para o painel."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -241,6 +311,7 @@ def contar_sessoes_hoje():
 
 
 def contar_eventos_sessao(sessao_id):
+    """Conta eventos capturados em uma sessao."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -258,6 +329,7 @@ def contar_eventos_sessao(sessao_id):
 
 
 def contar_aplicativos_sessao(sessao_id):
+    """Conta aplicativos distintos usados durante uma sessao."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -276,6 +348,7 @@ def registrar_evidencia_ocr(
         sessao_id,
         origem,
         texto_extraido):
+    """Salva texto bruto obtido por OCR."""
 
     conn = conectar()
     cursor = conn.cursor()
@@ -299,12 +372,74 @@ def registrar_evidencia_ocr(
     conn.close()
 
 
+def registrar_entidade(
+        sessao_id,
+        tipo,
+        valor):
+    """Salva uma entidade unica para a sessao."""
+
+    if not valor:
+        return
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+                   SELECT id
+                   FROM entidades
+                   WHERE sessao_id = ?
+                     AND tipo = ?
+                     AND valor = ?
+                   LIMIT 1
+                   """, (
+                       sessao_id,
+                       tipo,
+                       valor
+                   ))
+
+    if cursor.fetchone():
+        conn.close()
+        return
+
+    cursor.execute("""
+                   INSERT INTO entidades (
+                       sessao_id,
+                       data_hora,
+                       tipo,
+                       valor
+                   )
+                   VALUES (?, ?, ?, ?)
+                   """, (
+                       sessao_id,
+                       datetime.now(),
+                       tipo,
+                       valor
+                   ))
+
+    conn.commit()
+    conn.close()
+
+
+def registrar_entidades(
+        sessao_id,
+        entidades):
+    """Salva uma colecao de entidades ja extraidas."""
+
+    for tipo, valor in entidades:
+        registrar_entidade(
+            sessao_id,
+            tipo,
+            valor
+        )
+
+
 def registrar_navegacao(
         sessao_id,
         navegador,
         titulo,
         categoria,
         url=None):
+    """Registra uma pagina ou aba de navegador visitada."""
 
     conn = conectar()
     cursor = conn.cursor()
@@ -334,6 +469,7 @@ def registrar_ai_contexto(
         sessao_id,
         contexto_json,
         confianca):
+    """Persiste o resultado da analise por IA ou fallback local."""
 
     conn = conectar()
     cursor = conn.cursor()

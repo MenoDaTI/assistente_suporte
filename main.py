@@ -1,3 +1,5 @@
+"""Ponto de entrada que inicializa banco, monitores, atalhos e GUI."""
+
 import keyboard
 from activity_monitor import ActivityMonitor
 from database import criar_tabelas
@@ -8,6 +10,7 @@ manager = SessionManager()
 monitor = ActivityMonitor(manager)
 
 def iniciar():
+    """Solicita dados basicos e abre uma nova sessao de atendimento."""
 
     protocolo = input(
         "\nDigite o protocolo: "
@@ -24,10 +27,12 @@ def iniciar():
 
 
 def finalizar():
+    """Encerra a sessao ativa pelo atalho global."""
     manager.finalizar_sessao()
 
 
 def main():
+    """Prepara infraestrutura local e inicia a interface grafica."""
 
     criar_tabelas()
     monitor.iniciar()

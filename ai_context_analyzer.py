@@ -1,3 +1,5 @@
+"""Monta prompts, chama Ollama e normaliza o contexto retornado pela IA."""
+
 import json
 import re
 import requests
@@ -8,8 +10,10 @@ MODEL = "llama3.2:3b"
 
 
 class AIContextAnalyzer:
+    """Cliente do Ollama responsavel por transformar contexto em JSON tecnico."""
 
     def __init__(self):
+        """Define o modelo local usado nas chamadas."""
         self.model = MODEL
 
     def analisar(
@@ -22,6 +26,7 @@ class AIContextAnalyzer:
             descricao=None,
             timeline=None,
             categorias_navegacao=None):
+        """Monta prompt, chama Ollama e devolve contexto normalizado."""
 
         prompt = self._montar_prompt(
             janela=janela,
@@ -42,7 +47,7 @@ class AIContextAnalyzer:
                     "prompt": prompt,
                     "stream": False
                 },
-                timeout=120
+                timeout=240
             )
 
             resposta.raise_for_status()
@@ -77,6 +82,7 @@ class AIContextAnalyzer:
             descricao,
             timeline,
             categorias_navegacao):
+        """Cria o prompt com regras de classificacao e dados da sessao."""
 
         timeline = timeline or []
         categorias_navegacao = categorias_navegacao or []
@@ -167,6 +173,7 @@ OCR:
 """
 
     def _extrair_json(self, texto):
+        """Extrai JSON puro mesmo quando o modelo responde com texto extra."""
 
         if not texto:
             return {}
@@ -195,6 +202,7 @@ OCR:
         return {}
 
     def _normalizar_contexto(self, contexto):
+        """Garante chaves obrigatorias, tipos esperados e valores padrao."""
 
         contexto_padrao = {
             "categoria": "GERAL",
@@ -304,6 +312,7 @@ OCR:
         return contexto_padrao
 
     def _contexto_erro(self, erro):
+        """Converte falhas de Ollama/rede em resposta padronizada."""
 
         return {
             "categoria": "ERRO",

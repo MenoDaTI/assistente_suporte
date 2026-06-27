@@ -1,14 +1,19 @@
+"""Consolida dados relacionados a uma sessao em um unico dicionario."""
+
 import sqlite3
 from database import DB_NAME
 
 
 class SessionSummary:
+    """Carrega do banco todos os dados relacionados a uma sessao."""
 
     def __init__(self, sessao_id):
+        """Define qual sessao sera consolidada."""
 
         self.sessao_id = sessao_id
 
     def gerar(self):
+        """Busca tabelas relacionadas e devolve um resumo unico em dict."""
 
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory = sqlite3.Row

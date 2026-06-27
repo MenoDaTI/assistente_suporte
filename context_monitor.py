@@ -1,12 +1,16 @@
+"""Le o titulo, processo e PID da janela atualmente em foco no Windows."""
+
 import win32gui
 import win32process
 import psutil
 
 
 class ContextMonitor:
+    """Consulta APIs do Windows para identificar a janela em primeiro plano."""
 
     @staticmethod
     def obter_contexto_ativo():
+        """Retorna titulo, processo e PID da janela ativa."""
 
         try:
 

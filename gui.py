@@ -1,3 +1,5 @@
+"""Interface Tkinter para iniciar, acompanhar e finalizar atendimentos."""
+
 import tkinter as tk
 from tkinter import simpledialog
 from datetime import datetime
@@ -10,8 +12,14 @@ from database import (
 
 
 class AssistenteGUI:
+    """Painel simples para controlar sessao e disparar analise final."""
+    """Painel simples para controlar sessao e disparar analise final."""
+    """Painel simples para controlar sessao e disparar analise final."""
 
     def __init__(self, manager):
+        """Monta todos os elementos visuais e inicia atualizacao de status."""
+        """Monta todos os elementos visuais e inicia atualizacao de status."""
+        """Monta todos os elementos visuais e inicia atualizacao de status."""
 
         self.manager = manager
 
@@ -142,6 +150,9 @@ class AssistenteGUI:
         self.atualizar_tempo()
 
     def iniciar_sessao(self):
+        """Coleta protocolo, cliente e descricao antes de abrir sessao."""
+        """Coleta protocolo, cliente e descricao antes de abrir sessao."""
+        """Coleta protocolo/cliente/descricao e abre uma nova sessao."""
 
         protocolo = simpledialog.askstring(
             "Protocolo",
@@ -177,6 +188,9 @@ class AssistenteGUI:
         self.inicio_sessao = datetime.now()
 
     def finalizar_sessao(self):
+        """Finaliza a sessao e executa o SupportBrain quando ha id valido."""
+        """Finaliza a sessao e executa o SupportBrain quando ha id valido."""
+        """Finaliza a sessao e executa o SupportBrain para gerar analise."""
 
         sessao_id = self.manager.finalizar_sessao()
 
@@ -218,6 +232,9 @@ class AssistenteGUI:
                 )
 
     def atualizar_tempo(self):
+        """Atualiza status, cronometro e contadores exibidos na GUI."""
+        """Atualiza status, cronometro e contadores exibidos na GUI."""
+        """Atualiza labels de status, tempo, eventos e aplicativos usados."""
 
         # Protocolo
 
@@ -303,4 +320,7 @@ class AssistenteGUI:
             )
 
     def executar(self):
+        """Inicia o loop principal do Tkinter."""
+        """Inicia o loop principal do Tkinter."""
+        """Entrega o controle para o loop principal do Tkinter."""
         self.root.mainloop()
